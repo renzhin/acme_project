@@ -32,6 +32,8 @@ class BirthdayForm(forms.ModelForm):
         return first_name.split()[0]
 
     def clean(self):
+        # Вызов родительского метода clean.
+        super().clean()
         # Получаем имя и фамилию из очищенных полей формы.
         first_name = self.cleaned_data['first_name']
         last_name = self.cleaned_data['last_name']
