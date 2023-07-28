@@ -27,7 +27,7 @@ class BirthdayForm(forms.ModelForm):
     def clean_first_name(self):
         # Получаем значение имени из словаря очищенных данных.
         first_name = self.cleaned_data['first_name']
-        # Разбиваем полученную строку по пробелам 
+        # Разбиваем полученную строку по пробелам
         # и возвращаем только первое имя.
         return first_name.split()[0]
 
