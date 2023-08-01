@@ -2,7 +2,10 @@
 from django.views.generic import (
     CreateView, DetailView, DeleteView, ListView, UpdateView
 )
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from .forms import BirthdayForm
 # Импортируем модель дней рождения
@@ -15,16 +18,35 @@ class BirthdayMixin:
     model = Birthday
 
 
-class BirthdayCreateView(BirthdayMixin, CreateView):
+class BirthdayCreateView(LoginRequiredMixin, BirthdayMixin, CreateView):
     form_class = BirthdayForm
 
+    def form_valid(self, form):
+        # Присвоить полю author объект пользователя из запроса.
+        form.instance.author = self.request.user
+        # Продолжить валидацию, описанную в форме.
+        return super().form_valid(form)
 
-class BirthdayUpdateView(BirthdayMixin, UpdateView):
+
+class BirthdayUpdateView(LoginRequiredMixin, BirthdayMixin, UpdateView):
     form_class = BirthdayForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # Получаем объект по первичному ключу и автору или вызываем 404 ошибку.
+        get_object_or_404(Birthday, pk=kwargs['pk'], author=request.user)
+        # Если объект был найден, то вызываем родительский метод,
+        # чтобы работа CBV продолжилась.
+        return super().dispatch(request, *args, **kwargs)
 
-class BirthdayDeleteView(BirthdayMixin, DeleteView):
-    pass
+
+class BirthdayDeleteView(LoginRequiredMixin, BirthdayMixin, DeleteView):
+
+    def dispatch(self, request, *args, **kwargs):
+        # Получаем объект по первичному ключу и автору или вызываем 404 ошибку.
+        get_object_or_404(Birthday, pk=kwargs['pk'], author=request.user)
+        # Если объект был найден, то вызываем родительский метод,
+        # чтобы работа CBV продолжилась.
+        return super().dispatch(request, *args, **kwargs)
 
 
 class BirthdayDetailView(BirthdayMixin, DetailView):
@@ -49,3 +71,8 @@ class BirthdayListView(ListView):
     ordering = 'id'
     # ...и даже настройки пагинации:
     paginate_by = 10
+
+
+@login_required
+def simple_view(request):
+    return HttpResponse('Страница для залогиненных пользователей!')
