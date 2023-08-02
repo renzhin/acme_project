@@ -5,7 +5,7 @@ from django.views.generic import (
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 
 from .forms import BirthdayForm
 # Импортируем модель дней рождения
@@ -76,3 +76,9 @@ class BirthdayListView(ListView):
 @login_required
 def simple_view(request):
     return HttpResponse('Страница для залогиненных пользователей!')
+
+
+def page_not_found(request, exception):
+    # Переменная exception содержит отладочную информацию;
+    # выводить её в шаблон пользовательской страницы 404 мы не станем.
+    return render(request, 'core/404.html', status=404)

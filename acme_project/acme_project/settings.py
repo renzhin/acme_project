@@ -14,6 +14,8 @@ ALLOWED_HOSTS = [
     # например 'acme.not' и 'www.acme.not'
 ]
 
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'birthday.apps.BirthdayConfig',
     'pages.apps.PagesConfig',
-    'core.apps.PagesConfig',
+    'core.apps.CoreConfig',
     'django_bootstrap5',
 ]
 
