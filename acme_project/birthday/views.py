@@ -67,13 +67,19 @@ class BirthdayDetailView(BirthdayMixin, DetailView):
             # чтобы избежать множества запросов к БД.
             self.object.congratulations.select_related('author')
         )
-        return context 
+        return context
 
 
 # Наследуем класс от встроенного ListView:
 class BirthdayListView(ListView):
     # Указываем модель, с которой работает CBV...
     model = Birthday
+    # По умолчанию этот класс 
+    # выполняет запрос queryset = Birthday.objects.all(),
+    # но мы его переопределим:
+    queryset = Birthday.objects.prefetch_related(
+        'tags'
+    ).select_related('author')
     # ...сортировку, которая будет применена при выводе списка объектов:
     ordering = 'id'
     # ...и даже настройки пагинации:
